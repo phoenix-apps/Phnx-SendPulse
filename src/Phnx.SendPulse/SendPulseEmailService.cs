@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Phnx.SendPulse.Models;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -16,6 +17,7 @@ namespace Phnx.SendPulse
         }
 
         public ISendPulseAuthService SendPulseAuthService { get; }
+
         public HttpClient HttpClient { get; }
 
         public async Task SendAsync(
@@ -44,7 +46,14 @@ namespace Phnx.SendPulse
 
         public async Task<HttpResponseMessage> SendAsync(SendPulseSmtpRequestModel request)
         {
-            var json = JsonConvert.SerializeObject(request);
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.None,
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+
+            var json = JsonConvert.SerializeObject(request, settings);
 
             var httpRequest = new HttpRequestMessage(new HttpMethod("POST"), $"{Config.SendPulseApiUrl}smtp/emails")
             {

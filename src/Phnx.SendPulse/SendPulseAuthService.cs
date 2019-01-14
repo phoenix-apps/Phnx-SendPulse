@@ -26,7 +26,7 @@ namespace Phnx.SendPulse
 
         public async Task<SendPulseCredentials> GetCredentials(bool forceRenew = false)
         {
-            if (forceRenew || _credentialsCache.ExpiresOn <= DateTime.UtcNow.AddMinutes(1))
+            if (forceRenew || _credentialsCache is null || _credentialsCache.ExpiresOn <= DateTime.UtcNow.AddMinutes(1))
             {
                 // Renew
                 var credentials = await Login();
